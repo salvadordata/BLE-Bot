@@ -1,6 +1,7 @@
 #ifndef UI_H
 #define UI_H
 
+#include <Arduino.h>
 #include <vector>
 #include <BLEAdvertisedDevice.h>
 
@@ -15,13 +16,16 @@ public:
   // Handle button inputs for menu navigation
   static void handleButtonInput();
 
-  // Execute the selected module
+  // Execute the selected module based on menuIndex
   static void executeModule(int menuIndex);
 
 private:
-  // Helper functions for specific module UI features
-  static void scanForBeacons(std::vector<BLEAdvertisedDevice> &devices); // Scan for nearby BLE devices
-  static void selectCloningTarget(std::vector<BLEAdvertisedDevice> &devices); // Select a device for cloning
+  // Dynamic configuration menu
+  static void configureBLE();
+
+  // Helper functions for input handling
+  static String inputString(const String &label);  // Handle string input
+  static int inputInt(const String &label);        // Handle integer input
 };
 
 #endif
