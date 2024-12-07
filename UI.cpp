@@ -29,10 +29,17 @@ String menuItems[] = {
   "MITM",
   "Proximity Tracker",
   "Beacon Spoofer",
-  "Clone Beacon"
+  "Clone Beacon",
+  "Configure BLE"
 };
 int totalMenuItems = sizeof(menuItems) / sizeof(menuItems[0]);
 int currentMenu = 0;
+
+// Configuration Variables
+String advertisingUUID = "12345678-1234-1234-1234-123456789abc";
+String defaultPassword = "Password123";
+int scanDuration = 5;  // For BLE Sniffer
+int advertisingInterval = 100;  // BLE Spam interval
 
 // HID Emulation Payloads
 String payloads[] = {
@@ -127,5 +134,66 @@ void UI::executeModule(int menuIndex) {
       scanForBeacons(devices);
       selectCloningTarget(devices);
       break;
+    case 9: configureBLE(); break;  // Configuration Menu
   }
+}
+
+void UI::configureBLE() {
+  // Dynamic Configuration Menu
+  int configIndex = 0;
+  String configOptions[] = {"Set UUID", "Set Password", "Set Scan Time", "Set Interval"};
+  int totalConfigOptions = sizeof(configOptions) / sizeof(configOptions[0]);
+
+  while (true) {
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.println("Configure BLE:");
+    for (int i = 0; i < totalConfigOptions; i++) {
+      if (i == configIndex) display.print("> ");
+      else display.print("  ");
+      display.println(configOptions[i]);
+    }
+    display.display();
+
+    if (digitalRead(BUTTON_UP) == LOW) {
+      configIndex = (configIndex - 1 + totalConfigOptions) % totalConfigOptions;
+      delay(200);
+    } else if (digitalRead(BUTTON_DOWN) == LOW) {
+      configIndex = (configIndex + 1) % totalConfigOptions;
+      delay(200);
+    } else if (digitalRead(BUTTON_SELECT) == LOW) {
+      switch (configIndex) {
+        case 0: advertisingUUID = inputString("UUID"); break;
+        case 1: defaultPassword = inputString("Password"); break;
+        case 2: scanDuration = inputInt("Scan Time (s)"); break;
+        case 3: advertisingInterval = inputInt("Interval (ms)"); break;
+      }
+      break;
+    }
+  }
+}
+
+String UI::inputString(const String &label) {
+  String input = "";
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.println(label);
+  display.display();
+
+  while (true) {
+    if (Serial.available()) {
+      char c = Serial.read();
+      if (c == '\n') break;
+      input += c;
+      display.setCursor(0, 10);
+      display.println(input);
+      display.display();
+    }
+  }
+
+  return input;
+}
+
+int UI::inputInt(const String &label) {
+  return inputString(label).toInt();
 }
