@@ -36,37 +36,27 @@ jobs:
         python -m pip install --upgrade pip
         pip install platformio
 
-    # Step 6: Verify Directory Structure (Full Project)
-    - name: List full project directory structure
+    # Step 6: List Directory Structure
+    - name: Verify Directory Structure
       run: ls -R
 
-    # Step 7: Log Specific Directory (lib/modules)
-    - name: Log `lib/modules` Directory
-      run: ls -R lib/modules || echo "Directory not found"
-
-    # Step 8: Initialize Submodules
-    - name: Initialize submodules
+    # Step 7: Initialize Submodules
+    - name: Initialize Submodules
       run: git submodule update --init --recursive
 
-    # Step 9: Debug Include Paths
-    - name: Debug Include Paths
-      run: platformio run --verbose | grep -i "include"
-
-    # Step 10: Force Rebuild
-    - name: Force Rebuild
-      run: platformio run --target clean && platformio run -v
-
-    # Step 11: Build firmware (Verbose Mode)
-    - name: Build firmware (verbose)
+    # Step 8: Build Firmware (Verbose)
+    - name: Build Firmware
       run: platformio run -v
 
-    # Step 12: Upload firmware (if applicable)
-    - name: Upload firmware (if applicable)
+    # Step 9: Upload Firmware
+    - name: Upload Firmware (if applicable)
       run: platformio run --target upload
       env:
         PLATFORMIO_AUTH_TOKEN: ${{ secrets.PLATFORMIO_AUTH_TOKEN }}
 
-    # Step 13: Capture Build Errors
-    - name: Capture Build Errors
-      if: failure()
-      run: cat .pio/build/*/build.log || echo "No detailed build logs available"
+    # Step 10: Debug Missing Files
+    - name: Debug Include Paths
+      run: |
+        echo "Inspecting include paths..."
+        platformio run --target clean
+        platformio run -v || true
