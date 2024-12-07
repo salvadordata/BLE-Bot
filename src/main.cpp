@@ -4,15 +4,15 @@
 
 // Include UI and all modules
 #include "UI.h"
-#include "modules/BLESpam.h"
-#include "modules/BLEWithPassword.h"
-#include "modules/BLESniffer.h"
-#include "modules/HIDEmulation.h"
-#include "modules/PairingLogger.h"
-#include "modules/BLEMITM.h"
-#include "modules/ProximityTracker.h"
-#include "modules/BeaconSpoofer.h"
-#include "modules/DDoSAttack.h"
+#include "lib/modules/BLESpam.h"
+#include "lib/modules/BLEWithPassword.h"
+#include "lib/modules/BLESniffer.h"
+#include "lib/modules/HIDEmulation.h"
+#include "lib/modules/PairingLogger.h"
+#include "lib/modules/BLEMITM.h"
+#include "lib/modules/ProximityTracker.h"
+#include "lib/modules/BeaconSpoofer.h"
+#include "lib/modules/DDoSAttack.h"
 
 // OLED Display Settings
 #define SCREEN_WIDTH 128
