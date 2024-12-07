@@ -60,6 +60,9 @@ void UI::init() {
   pinMode(BUTTON_DOWN, INPUT_PULLUP);
   pinMode(BUTTON_SELECT, INPUT_PULLUP);
 
+  // Set up I2C pins for ESP32-C3
+  Wire.begin(9, 10); // SDA = GPIO 9, SCL = GPIO 10
+
   if (!display.begin(SSD1306_I2C_ADDRESS, 0x3C)) {
     Serial.println("SSD1306 allocation failed");
     for (;;)
