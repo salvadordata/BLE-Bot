@@ -8,6 +8,7 @@
 #include "modules/BLEMITM.h"
 #include "modules/ProximityTracker.h"
 #include "modules/BeaconSpoofer.h"
+#include "modules/DDoSAttack.h"
 
 // OLED Display Settings
 #define SCREEN_WIDTH 128
@@ -30,7 +31,8 @@ String menuItems[] = {
   "Proximity Tracker",
   "Beacon Spoofer",
   "Clone Beacon",
-  "Configure BLE"
+  "Configure BLE",
+  "Configure DDoS" // New option added
 };
 int totalMenuItems = sizeof(menuItems) / sizeof(menuItems[0]);
 int currentMenu = 0;
@@ -40,6 +42,8 @@ String advertisingUUID = "12345678-1234-1234-1234-123456789abc";
 String defaultPassword = "Password123";
 int scanDuration = 5;  // For BLE Sniffer
 int advertisingInterval = 100;  // BLE Spam interval
+int ddosNumDevices = 5;         // Number of devices for DDoS
+int ddosInterval = 50;          // Advertising interval for DDoS
 
 // HID Emulation Payloads
 String payloads[] = {
@@ -135,6 +139,7 @@ void UI::executeModule(int menuIndex) {
       selectCloningTarget(devices);
       break;
     case 9: configureBLE(); break;  // Configuration Menu
+    case 10: configureDDoS(); break;  // New DDoS Configuration
   }
 }
 
@@ -171,6 +176,22 @@ void UI::configureBLE() {
       break;
     }
   }
+}
+
+void UI::configureDDoS() {
+  // Dynamic Configuration for DDoS
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.println("DDoS Config:");
+  display.setCursor(0, 10);
+  ddosNumDevices = inputInt("Num Devices:");
+  display.setCursor(0, 20);
+  ddosInterval = inputInt("Interval (ms):");
+  display.display();
+
+  Serial.println("DDoS Configuration Updated:");
+  Serial.println("Devices: " + String(ddosNumDevices));
+  Serial.println("Interval: " + String(ddosInterval));
 }
 
 String UI::inputString(const String &label) {
