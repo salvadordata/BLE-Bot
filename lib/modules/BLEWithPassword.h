@@ -1,12 +1,15 @@
 #ifndef BLEWITHPASSWORD_H
 #define BLEWITHPASSWORD_H
 
-#include <Arduino.h>
+#include <iostream> // For debugging purposes
 
 class BLEWithPassword {
 public:
-  static void start();  // Start BLE with Password
-  static void logPassword(const String &password);  // Log password to SD card
+  static void start();  // Start BLE module with password
+
+private:
+  static void initializeAdvertisingData();  // Initialize BLE advertising data
 };
 
 #endif
+
