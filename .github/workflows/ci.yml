@@ -7,6 +7,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+    - name: Clean PlatformIO Cache
+      run: platformio run --target clean
+
     # Step 1: Checkout code
     - name: Checkout code
       uses: actions/checkout@v2
