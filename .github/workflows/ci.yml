@@ -7,39 +7,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
+    # Step 1: Clean PlatformIO Cache
     - name: Clean PlatformIO Cache
-      run: platformio run --target clean
+      run: platformio run --target clean || true
 
-    # Step 1: Checkout code
+    # Step 2: Cache PlatformIO Dependencies
+    - name: Cache PlatformIO
+      uses: actions/cache@v2
+      with:
+        path: ~/.platformio
+        key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
+        restore-keys: |
+          ${{ runner.os }}-platformio-
+
+    # Step 3: Checkout code
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # Step 2: Set up Python
+    # Step 4: Set up Python
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
 
-    # Step 3: Install PlatformIO
+    # Step 5: Install PlatformIO
     - name: Install PlatformIO
       run: |
         python -m pip install --upgrade pip
         pip install platformio
 
-    # Step 4: Verify Directory Structure
+    # Step 6: Verify Directory Structure
     - name: List directory structure
       run: ls -R
 
-    # Step 5: Initialize Submodules
+    # Step 7: Initialize Submodules
     - name: Initialize submodules
       run: git submodule update --init --recursive
 
-    # Step 6: Build Firmware (Verbose Mode)
-    - name: Build firmware (verbose)
-      run: platformio run -v
+    # Step 8: Force Rebuild
+    - name: Force Rebuild
+      run: platformio run --target clean && platformio run -v
 
-    # Step 7: Upload firmware (if applicable)
+    # Step 9: Upload firmware (if applicable)
     - name: Upload firmware (if applicable)
       run: platformio run --target upload
       env:
