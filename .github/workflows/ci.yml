@@ -1,3 +1,4 @@
+---
 name: Build, Test, and Lint
 
 on: 
@@ -13,72 +14,72 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Clean PlatformIO Cache
-    - name: Clean PlatformIO Cache
-      run: platformio run --target clean || true
+      # Step 1: Clean PlatformIO Cache
+      - name: Clean PlatformIO Cache
+        run: platformio run --target clean || true
 
-    # Step 2: Cache PlatformIO Dependencies
-    - name: Cache PlatformIO
-      uses: actions/cache@v2
-      with:
-        path: ~/.platformio
-        key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
-        restore-keys: |
-          ${{ runner.os }}-platformio-
+      # Step 2: Cache PlatformIO Dependencies
+      - name: Cache PlatformIO
+        uses: actions/cache@v2
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
+          restore-keys: |
+            ${{ runner.os }}-platformio-
 
-    # Step 3: Checkout code
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Step 3: Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # Step 4: Set up Python
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11' # Switched to Python 3.11 for compatibility
+      # Step 4: Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11' # Switched to Python 3.11 for compatibility
 
-    # Step 5: Install PlatformIO and Linting Tools
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install platformio flake8 black pylint
+      # Step 5: Install PlatformIO and Linting Tools
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install platformio flake8 black pylint
 
-    # Step 6: List Directory Structure
-    - name: Verify Directory Structure
-      run: ls -R
+      # Step 6: List Directory Structure
+      - name: Verify Directory Structure
+        run: ls -R
 
-    # Step 7: Initialize Submodules
-    - name: Initialize Submodules
-      run: git submodule update --init --recursive
+      # Step 7: Initialize Submodules
+      - name: Initialize Submodules
+        run: git submodule update --init --recursive
 
-    # Step 8: Build Firmware (Verbose)
-    - name: Build Firmware
-      run: platformio run -v
+      # Step 8: Build Firmware (Verbose)
+      - name: Build Firmware
+        run: platformio run -v
 
-    # Step 9: Upload Firmware (if applicable)
-    - name: Upload Firmware
-      run: platformio run --target upload
-      env:
-        PLATFORMIO_AUTH_TOKEN: ${{ secrets.PLATFORMIO_AUTH_TOKEN }}
+      # Step 9: Upload Firmware (if applicable)
+      - name: Upload Firmware
+        run: platformio run --target upload
+        env:
+          PLATFORMIO_AUTH_TOKEN: ${{ secrets.PLATFORMIO_AUTH_TOKEN }}
 
-    # Step 10: Debug Missing Files
-    - name: Debug Include Paths
-      run: |
-        echo "Inspecting include paths..."
-        platformio run --target clean
-        platformio run -v || true
+      # Step 10: Debug Include Paths
+      - name: Debug Include Paths
+        run: |
+          echo "Inspecting include paths..."
+          platformio run --target clean
+          platformio run -v || true
 
-    # Step 11: Lint Python Code
-    - name: Lint with Flake8
-      run: flake8 .
-    - name: Format with Black
-      run: black --check .
-    - name: Lint with Pylint
-      run: pylint $(find . -name "*.py")
+      # Step 11: Lint Python Code
+      - name: Lint with Flake8
+        run: flake8 .
+      - name: Format with Black
+        run: black --check .
+      - name: Lint with Pylint
+        run: pylint $(find . -name "*.py")
     
-    # Step 12: Debugging Logs (Optional)
-    - name: Output Python Environment Details
-      run: python -m pip list
+      # Step 12: Debugging Logs (Optional)
+      - name: Output Python Environment Details
+        run: python -m pip list
 
-    # Step 13: Output Python Version
-    - name: Confirm Python Version
-      run: python --version
+      # Step 13: Output Python Version
+      - name: Confirm Python Version
+        run: python --version
