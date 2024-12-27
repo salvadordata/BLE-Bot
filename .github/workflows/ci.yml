@@ -1,6 +1,12 @@
-name: Build and Test
+name: Build, Test, and Lint
 
-on: [push, pull_request]
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
@@ -22,19 +28,19 @@ jobs:
 
     # Step 3: Checkout code
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     # Step 4: Set up Python
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.x'
+        python-version: '3.11' # Switched to Python 3.11 for compatibility
 
-    # Step 5: Install PlatformIO
-    - name: Install PlatformIO
+    # Step 5: Install PlatformIO and Linting Tools
+    - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install platformio
+        pip install platformio flake8 black pylint
 
     # Step 6: List Directory Structure
     - name: Verify Directory Structure
@@ -48,8 +54,8 @@ jobs:
     - name: Build Firmware
       run: platformio run -v
 
-    # Step 9: Upload Firmware
-    - name: Upload Firmware (if applicable)
+    # Step 9: Upload Firmware (if applicable)
+    - name: Upload Firmware
       run: platformio run --target upload
       env:
         PLATFORMIO_AUTH_TOKEN: ${{ secrets.PLATFORMIO_AUTH_TOKEN }}
@@ -60,3 +66,19 @@ jobs:
         echo "Inspecting include paths..."
         platformio run --target clean
         platformio run -v || true
+
+    # Step 11: Lint Python Code
+    - name: Lint with Flake8
+      run: flake8 .
+    - name: Format with Black
+      run: black --check .
+    - name: Lint with Pylint
+      run: pylint $(find . -name "*.py")
+    
+    # Step 12: Debugging Logs (Optional)
+    - name: Output Python Environment Details
+      run: python -m pip list
+
+    # Step 13: Output Python Version
+    - name: Confirm Python Version
+      run: python --version
