@@ -1,5 +1,5 @@
 ---
-name: Build, Test, and Lint
+name: Build, Test, and Lint (C++)
 
 on: 
   push:
@@ -31,19 +31,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 4: Set up Python
+      # Step 4: Set up Python (for PlatformIO)
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11' # Switched to Python 3.11 for compatibility
+          python-version: '3.11'
 
-      # Step 5: Install PlatformIO and Linting Tools
+      # Step 5: Install PlatformIO and Clang-Tidy
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install platformio flake8 black pylint
+          pip install platformio
+          sudo apt-get update && sudo apt-get install -y clang-tidy
 
-      # Step 6: List Directory Structure
+      # Step 6: Verify Directory Structure
       - name: Verify Directory Structure
         run: ls -R
 
@@ -51,7 +52,7 @@ jobs:
       - name: Initialize Submodules
         run: git submodule update --init --recursive
 
-      # Step 8: Build Firmware (Verbose)
+      # Step 8: Build Firmware
       - name: Build Firmware
         run: platformio run -v
 
@@ -61,25 +62,21 @@ jobs:
         env:
           PLATFORMIO_AUTH_TOKEN: ${{ secrets.PLATFORMIO_AUTH_TOKEN }}
 
-      # Step 10: Debug Include Paths
+      # Step 10: Lint C++ Code with Clang-Tidy
+      - name: Lint C++ Code
+        run: clang-tidy $(find src lib -name "*.cpp") -- -std=c++17
+
+      # Step 11: Debug Include Paths
       - name: Debug Include Paths
         run: |
           echo "Inspecting include paths..."
           platformio run --target clean
           platformio run -v || true
 
-      # Step 11: Lint Python Code
-      - name: Lint with Flake8
-        run: flake8 .
-      - name: Format with Black
-        run: black --check .
-      - name: Lint with Pylint
-        run: pylint $(find . -name "*.py")
-    
-      # Step 12: Debugging Logs (Optional)
-      - name: Output Python Environment Details
-        run: python -m pip list
-
-      # Step 13: Output Python Version
-      - name: Confirm Python Version
-        run: python --version
+      # Step 12: Debugging Logs
+      - name: Output Environment Details
+        run: |
+          echo "Python Version:"
+          python --version
+          echo "Installed Packages:"
+          python -m pip list
