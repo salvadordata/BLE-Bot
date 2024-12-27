@@ -1,0 +1,25 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-I./lib/modules",
+                "-I./lib",
+                "-std=c++17",
+                "-g",
+                "${workspaceFolder}/src/main.cpp", // Adjust if your main file is named differently
+                "-o",
+                "${workspaceFolder}/build/ble_bot" // Ensure this matches the 'program' in launch.json
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Compiled with g++"
+        }
+    ]
+}
